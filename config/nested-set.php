@@ -30,21 +30,6 @@ return [
 
     'table' => 'nested_sets',
 
-    /*
-    |--------------------------------------------------------------------------
-    | Livewire Component Configuration
-    |--------------------------------------------------------------------------
-    |
-    | Configuration options for the Livewire nested set manager component.
-    |
-    */
-
-    'livewire' => [
-        'component_name' => 'nested-set-manager',
-        'enable_drag_drop' => true,
-        'enable_lazy_loading' => true,
-        'items_per_page' => 50,
-    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -59,5 +44,29 @@ return [
         'enabled' => true,
         'ttl' => 3600, // 1 hour
         'prefix' => 'nested_set_',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Available Models
+    |--------------------------------------------------------------------------
+    |
+    | List of models that can be managed through the web interface.
+    | Each model should have a unique name and class reference.
+    |
+    */
+
+    'models' => [
+        // Пример конфигурации для модели Category:
+        /*
+        [
+            'name' => 'category',                        // Уникальное имя для URL (латиницей)
+            'class' => App\Models\Category::class,       // Класс модели
+            'label' => 'Категории',                      // Отображаемое название
+            'description' => 'Управление категориями',   // Описание (опционально)
+        ],
+        */
+        
+        // Добавьте ваши модели здесь:
     ],
 ];

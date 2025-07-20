@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Package Overview
 
-This is a Laravel package for managing hierarchical data using the Nested Set pattern. It includes a Livewire 3 component with drag-and-drop support via Alpine.js Sort plugin.
+This is a Laravel package for managing hierarchical data using the Nested Set pattern. It includes a modern Vue.js 3 web interface with drag-and-drop support via Sortable.js.
 
 ## Development Commands
 
@@ -66,14 +66,18 @@ Key invariants:
    - Abstract base model with trait pre-applied
    - Default configuration
 
-3. **NestedSetManager** (`src/Http/Livewire/NestedSetManager.php`)
-   - Livewire component for UI management
-   - Handles drag-and-drop via Alpine.js Sort
-   - CRUD operations with real-time updates
+3. **Web Interface** (`resources/js/nested-set-standalone.js`)
+   - Vue.js 3 application for UI management
+   - Handles drag-and-drop via Sortable.js
+   - CRUD operations with REST API
 
-4. **Service Provider** (`src/NestedSetServiceProvider.php`)
-   - Registers Livewire component
-   - Publishes config, migrations, and views
+4. **API Controller** (`src/Http/Controllers/NestedSetApiController.php`)
+   - REST API endpoints for tree operations
+   - Handles models, tree, CRUD, and reorder operations
+
+5. **Service Provider** (`src/NestedSetServiceProvider.php`)
+   - Publishes config, migrations, views, and assets
+   - Loads API and web routes
 
 ### Critical Implementation Details
 
@@ -94,7 +98,6 @@ Key invariants:
 ## Testing Approach
 
 - Unit tests cover all NestedSetTrait methods
-- Feature tests verify Livewire component functionality
 - Tests use SQLite in-memory database
 - Key test scenarios: node creation, movement, deletion, tree integrity
 

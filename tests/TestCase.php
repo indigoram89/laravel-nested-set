@@ -4,7 +4,6 @@ namespace Indigoram89\NestedSet\Tests;
 
 use Orchestra\Testbench\TestCase as Orchestra;
 use Indigoram89\NestedSet\NestedSetServiceProvider;
-use Livewire\LivewireServiceProvider;
 use Illuminate\Database\Schema\Blueprint;
 
 abstract class TestCase extends Orchestra
@@ -19,7 +18,6 @@ abstract class TestCase extends Orchestra
     protected function getPackageProviders($app)
     {
         return [
-            LivewireServiceProvider::class,
             NestedSetServiceProvider::class,
         ];
     }

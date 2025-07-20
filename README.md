@@ -4,13 +4,12 @@
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/indigoram89/laravel-nested-set/tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/indigoram89/laravel-nested-set/actions?query=workflow%3Atests+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/indigoram89/laravel-nested-set.svg?style=flat-square)](https://packagist.org/packages/indigoram89/laravel-nested-set)
 
-Пакет для управления иерархическими данными в Laravel с использованием паттерна Nested Set. Включает веб-интерфейс на Livewire 3 с поддержкой drag-and-drop.
+Пакет для управления иерархическими данными в Laravel с использованием паттерна Nested Set. Включает современный веб-интерфейс на Vue.js 3 с поддержкой drag-and-drop и REST API.
 
 ## Требования
 
 - PHP 8.4+
 - Laravel 12.x
-- Livewire 3.x
 
 ## Установка
 
@@ -37,6 +36,12 @@ php artisan migrate
 
 ```bash
 php artisan vendor:publish --tag=nested-set-views
+```
+
+### Публикация assets для веб-интерфейса
+
+```bash
+php artisan vendor:publish --tag=nested-set-assets
 ```
 
 ## Использование
@@ -185,37 +190,86 @@ Category::query()->leaves()->get();
 Category::query()->withDepth(2)->get();
 ```
 
-### Livewire компонент
+### Веб-интерфейс на Vue.js
 
-Для использования готового интерфейса управления деревом, добавьте компонент на страницу:
+Пакет включает современный веб-интерфейс для управления деревьями с использованием Vue.js 3, Tailwind CSS и REST API.
 
-```blade
-@livewire('nested-set-manager', ['model_class' => App\Models\Category::class])
+#### Возможности
+
+- 🎯 Выбор модели для управления
+- 🌳 Визуализация дерева с анимациями
+- 🔍 Поиск по дереву
+- ➕ Создание новых узлов
+- ✏️ Редактирование существующих узлов
+- 🗑️ Удаление узлов с подтверждением
+- 🔄 Drag & Drop для перемещения узлов
+- 📱 Адаптивный дизайн
+
+#### Установка веб-интерфейса
+
+1. Опубликуйте конфигурацию и assets:
+
+```bash
+# Опубликовать всё
+php artisan vendor:publish --provider="Indigoram89\NestedSet\NestedSetServiceProvider"
+
+# Или по отдельности:
+php artisan vendor:publish --tag=nested-set-config
+php artisan vendor:publish --tag=nested-set-assets
 ```
 
-Компонент включает:
-- Отображение древовидной структуры
-- Drag-and-drop для изменения порядка и вложенности
-- CRUD операции
-- Поиск по элементам
+2. Настройте модели в файле `config/nested-set.php`:
 
-### Настройка Alpine.js Sort
+```php
+'models' => [
+    [
+        'name' => 'category',
+        'class' => App\Models\Category::class,
+        'label' => 'Категории',
+        'description' => 'Управление категориями товаров',
+    ],
+    [
+        'name' => 'menu',
+        'class' => App\Models\MenuItem::class,
+        'label' => 'Меню',
+        'description' => 'Управление пунктами меню',
+    ],
+],
+```
 
-Для работы drag-and-drop функциональности необходимо подключить Alpine.js с плагином Sort:
+3. Откройте в браузере:
 
-```html
-<!-- Alpine.js -->
-<script defer src="https://unpkg.com/@alpinejs/sort@3.x.x/dist/cdn.min.js"></script>
-<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+```
+http://your-app.test/nested-set
+```
 
-<!-- Или через npm -->
-<script>
-import Alpine from 'alpinejs'
-import sort from '@alpinejs/sort'
+#### API Endpoints
 
-Alpine.plugin(sort)
-Alpine.start()
-</script>
+Интерфейс использует следующие API endpoints:
+
+- `GET /api/nested-set/models` - получить список моделей
+- `GET /api/nested-set/{model}/tree` - получить дерево
+- `POST /api/nested-set/{model}/nodes` - создать узел
+- `PUT /api/nested-set/{model}/nodes/{id}` - обновить узел
+- `DELETE /api/nested-set/{model}/nodes/{id}` - удалить узел
+- `POST /api/nested-set/{model}/reorder` - переупорядочить узлы
+
+#### Безопасность
+
+- Все запросы защищены CSRF токеном
+- Валидация на стороне сервера
+- Защита от циклических ссылок при перемещении узлов
+
+#### Добавление аутентификации
+
+Для защиты интерфейса добавьте middleware в маршруты:
+
+```php
+Route::prefix('nested-set')
+    ->middleware(['web', 'auth', 'can:manage-trees'])
+    ->group(function () {
+        Route::get('/', [NestedSetWebController::class, 'index']);
+    });
 ```
 
 ## Конфигурация
@@ -235,12 +289,9 @@ return [
     // Имя таблицы по умолчанию
     'table' => 'nested_sets',
 
-    // Настройки Livewire компонента
-    'livewire' => [
-        'component_name' => 'nested-set-manager',
-        'enable_drag_drop' => true,
-        'enable_lazy_loading' => true,
-        'items_per_page' => 50,
+    // Модели для веб-интерфейса
+    'models' => [
+        // Добавьте ваши модели здесь
     ],
 
     // Настройки производительности
