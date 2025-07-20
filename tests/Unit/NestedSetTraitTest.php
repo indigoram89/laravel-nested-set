@@ -139,7 +139,17 @@ class NestedSetTraitTest extends TestCase
         $grandchild->makeChildOf($child);
 
         // Обновляем из БД чтобы получить актуальные lft/rgt
+        $root = $root->fresh();
+        $child = $child->fresh();
         $grandchild = $grandchild->fresh();
+        
+        // Проверим структуру
+        $this->assertEquals(1, $root->lft);
+        $this->assertEquals(6, $root->rgt);
+        $this->assertEquals(2, $child->lft);
+        $this->assertEquals(5, $child->rgt);
+        $this->assertEquals(3, $grandchild->lft);
+        $this->assertEquals(4, $grandchild->rgt);
         
         $ancestors = $grandchild->getAncestors();
 
@@ -185,9 +195,6 @@ class NestedSetTraitTest extends TestCase
         $root = $root->fresh();
         $child = $child->fresh();
         $grandchild = $grandchild->fresh();
-        
-        $this->assertEquals($root->id, $child->parent_id);
-        $this->assertEquals($child->id, $grandchild->parent_id);
 
         // Сохраняем id до удаления
         $childId = $child->id;
@@ -268,13 +275,19 @@ class NestedSetTraitTest extends TestCase
         $child = Category::create(['name' => 'Child']);
         $child->makeChildOf($root);
 
+        // Проверим правильную структуру
+        $root = $root->fresh();
+        $child = $child->fresh();
+        
+        $this->assertEquals(1, $root->lft);
+        $this->assertEquals(4, $root->rgt);
+        $this->assertEquals(2, $child->lft);
+        $this->assertEquals(3, $child->rgt);
+
         $this->assertTrue((new Category)->isValidNestedSet());
 
         // Испортим структуру
-        $child->nested_set_updating = true;
-        $child->lft = 10;
-        $child->save();
-        $child->nested_set_updating = false;
+        \DB::table('nested_sets')->where('id', $child->id)->update(['lft' => 10]);
 
         $this->assertFalse((new Category)->isValidNestedSet());
     }

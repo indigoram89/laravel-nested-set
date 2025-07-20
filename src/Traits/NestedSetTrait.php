@@ -85,7 +85,8 @@ trait NestedSetTrait
             return $this->moveToRightOf($lastChild);
         }
         
-        return $this->moveToRightOf($parent);
+        // Вставка первого дочернего элемента
+        return $this->moveTo($parent->{$this->getLeftColumn()} + 1, 'left');
     }
 
     public function moveToLeftOf(Model $target): self
@@ -95,10 +96,6 @@ trait NestedSetTrait
 
     public function moveToRightOf(Model $target): self
     {
-        if ($target->isRoot() && $target->isLeaf()) {
-            // Вставка первого дочернего элемента корневого узла
-            return $this->moveTo($target->{$this->getLeftColumn()} + 1, 'left');
-        }
         return $this->moveTo($target->{$this->getRightColumn()} + 1, 'right');
     }
 
@@ -298,10 +295,7 @@ trait NestedSetTrait
 
     public function deleteSubtree(): bool
     {
-        return DB::transaction(function () {
-            $this->nested_set_updating = true;
-            return $this->delete();
-        });
+        return $this->delete();
     }
 
     #[Scope]
@@ -366,22 +360,39 @@ trait NestedSetTrait
         }
         
         $stack = [];
+        $lastRight = 0;
         
         foreach ($nodes as $node) {
             $left = $node->{$this->getLeftColumn()};
             $right = $node->{$this->getRightColumn()};
             
-            if ($left >= $right) {
+            // Проверка базовых правил
+            if ($left <= 0 || $right <= 0 || $left >= $right) {
                 return false;
             }
             
-            while (!empty($stack) && $stack[count($stack) - 1] < $right) {
-                array_pop($stack);
+            // left должен быть больше последнего обработанного значения
+            if ($left <= $lastRight) {
+                return false;
             }
             
+            // Закрываем завершенные узлы
+            while (!empty($stack) && $stack[count($stack) - 1] < $left) {
+                $lastRight = array_pop($stack);
+            }
+            
+            // Добавляем текущий узел
             $stack[] = $right;
         }
         
-        return count($stack) === 1;
+        // Все узлы должны быть закрыты
+        while (!empty($stack)) {
+            $lastRight = array_pop($stack);
+        }
+        
+        // Последний right должен соответствовать максимальному
+        $maxRight = $nodes->max($this->getRightColumn());
+        
+        return $lastRight === $maxRight;
     }
 }

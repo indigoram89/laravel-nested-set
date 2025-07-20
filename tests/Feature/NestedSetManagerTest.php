@@ -106,11 +106,25 @@ class NestedSetManagerTest extends TestCase
         $category3 = Category::create(['name' => 'Cherry']);
         $category3->makeRoot();
 
-        Livewire::test(NestedSetManager::class, ['model_class' => Category::class])
-            ->set('search', 'Ban')
+        $component = Livewire::test(NestedSetManager::class, ['model_class' => Category::class]);
+        
+        // Проверяем что изначально видны все элементы
+        $component->assertSee('Apple')
             ->assertSee('Banana')
-            ->assertDontSee('Apple')
-            ->assertDontSee('Cherry');
+            ->assertSee('Cherry');
+        
+        // Устанавливаем поиск и проверяем фильтрацию
+        $component->set('search', 'Ban');
+        
+        // Проверяем что видны только элементы содержащие "Ban"
+        $component->assertSee('Banana');
+        
+        // Проверяем что элементы НЕ содержащие "Ban" скрыты
+        // В выводе все еще могут быть упоминания в селектах модальных окон
+        // поэтому проверяем структуру дерева
+        $treeData = $component->get('tree_data');
+        $this->assertCount(1, $treeData);
+        $this->assertEquals('Banana', $treeData[0]['name']);
     }
 
     public function test_can_reorder_items()
