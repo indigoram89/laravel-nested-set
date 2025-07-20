@@ -1,0 +1,41 @@
+{
+    "name": "indigoram89/laravel-nested-set",
+    "description": "Laravel package for managing hierarchical data using Nested Set pattern with drag-and-drop interface",
+    "keywords": ["laravel", "nested-set", "hierarchy", "tree", "livewire", "drag-and-drop"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "indigoram89",
+            "email": "indigoram89@example.com"
+        }
+    ],
+    "require": {
+        "php": "^8.4",
+        "illuminate/support": "^12.0",
+        "illuminate/database": "^12.0",
+        "livewire/livewire": "^3.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^10.0",
+        "phpunit/phpunit": "^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Indigoram89\\NestedSet\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Indigoram89\\NestedSet\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Indigoram89\\NestedSet\\NestedSetServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
