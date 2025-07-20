@@ -136,7 +136,8 @@
             emits: ['edit', 'delete'],
             template: `
                 <div class="node-item group">
-                    <div class="flex items-center p-3 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-all duration-200">
+                    <div class="flex items-center p-3 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-all duration-200"
+                         :class="{ 'bg-yellow-50 border-yellow-300': node.highlighted }">
                         <div class="drag-handle cursor-move mr-3 text-gray-400 hover:text-gray-600">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"></path>
@@ -162,7 +163,7 @@
                         
                         <div class="flex-1">
                             <div class="flex items-center">
-                                <span class="font-medium text-gray-800">{{ node.name }}</span>
+                                <span class="font-medium" :class="{ 'text-yellow-900': node.highlighted, 'text-gray-800': !node.highlighted }">{{ node.name }}</span>
                                 <span v-if="node.slug" class="ml-2 text-sm text-gray-500">
                                     ({{ node.slug }})
                                 </span>

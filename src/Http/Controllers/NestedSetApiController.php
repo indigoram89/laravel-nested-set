@@ -37,16 +37,51 @@ class NestedSetApiController extends Controller
         }
         
         $query = $model_class::query();
+        $searchResultIds = collect();
         
         // Поиск
         if ($search = $request->get('search')) {
-            $query->where('name', 'like', "%{$search}%");
+            // Поиск по имени без учета регистра
+            $searchResults = $model_class::query()
+                ->whereRaw('LOWER(name) LIKE ?', ['%' . mb_strtolower($search) . '%'])
+                ->get();
+            
+            if ($searchResults->isEmpty()) {
+                return response()->json([
+                    'data' => []
+                ]);
+            }
+            
+            // Сохраняем ID найденных узлов для подсветки
+            $searchResultIds = $searchResults->pluck('id');
+            
+            // Получаем все ID найденных узлов и их предков
+            $nodeIds = collect();
+            foreach ($searchResults as $node) {
+                // Добавляем сам узел
+                $nodeIds->push($node->id);
+                
+                // Добавляем всех предков
+                $ancestors = $model_class::query()
+                    ->where('lft', '<', $node->lft)
+                    ->where('rgt', '>', $node->rgt)
+                    ->pluck('id');
+                
+                $nodeIds = $nodeIds->merge($ancestors);
+            }
+            
+            // Получаем только нужные узлы
+            $items = $model_class::query()
+                ->whereIn('id', $nodeIds->unique())
+                ->orderBy('lft')
+                ->get();
+        } else {
+            // Без поиска - возвращаем всё дерево
+            $items = $query->orderBy('lft')->get();
         }
         
-        $items = $query->orderBy('lft')->get();
-        
         // Построение дерева
-        $tree = $this->buildTree($items);
+        $tree = $this->buildTree($items, null, $searchResultIds);
         
         return response()->json([
             'data' => $tree
@@ -331,7 +366,7 @@ class NestedSetApiController extends Controller
     /**
      * Построить дерево из плоского списка
      */
-    protected function buildTree($items, $parent_id = null): array
+    protected function buildTree($items, $parent_id = null, $searchResultIds = null): array
     {
         $tree = [];
         
@@ -350,7 +385,12 @@ class NestedSetApiController extends Controller
                     'expanded' => true, // По умолчанию раскрываем все узлы
                 ];
                 
-                $children = $this->buildTree($items, $item->id);
+                // Помечаем найденные элементы
+                if ($searchResultIds && $searchResultIds->contains($item->id)) {
+                    $node['highlighted'] = true;
+                }
+                
+                $children = $this->buildTree($items, $item->id, $searchResultIds);
                 if (!empty($children)) {
                     $node['children'] = $children;
                 }
