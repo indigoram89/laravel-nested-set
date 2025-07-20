@@ -3,7 +3,7 @@
     "description": "Laravel package for managing hierarchical data using Nested Set pattern with drag-and-drop interface",
     "keywords": ["laravel", "nested-set", "hierarchy", "tree", "livewire", "drag-and-drop"],
     "license": "MIT",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "authors": [
         {
             "name": "indigoram89",
