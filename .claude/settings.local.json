@@ -15,7 +15,10 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(gh repo create:*)",
-      "Bash(gh repo view:*)"
+      "Bash(gh repo view:*)",
+      "Bash(git push:*)",
+      "Bash(git tag:*)",
+      "Bash(chmod:*)"
     ],
     "deny": []
   }

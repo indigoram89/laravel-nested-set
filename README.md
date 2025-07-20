@@ -1,5 +1,9 @@
 # Laravel Nested Set
 
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/indigoram89/laravel-nested-set.svg?style=flat-square)](https://packagist.org/packages/indigoram89/laravel-nested-set)
+[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/indigoram89/laravel-nested-set/tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/indigoram89/laravel-nested-set/actions?query=workflow%3Atests+branch%3Amain)
+[![Total Downloads](https://img.shields.io/packagist/dt/indigoram89/laravel-nested-set.svg?style=flat-square)](https://packagist.org/packages/indigoram89/laravel-nested-set)
+
 Пакет для управления иерархическими данными в Laravel с использованием паттерна Nested Set. Включает веб-интерфейс на Livewire 3 с поддержкой drag-and-drop.
 
 ## Требования
