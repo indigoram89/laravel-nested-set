@@ -18,7 +18,8 @@
       "Bash(gh repo view:*)",
       "Bash(git push:*)",
       "Bash(git tag:*)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(./release.sh:*)"
     ],
     "deny": []
   }
